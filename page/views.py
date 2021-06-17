@@ -12,13 +12,13 @@ from product.models import Category, Product, Images, Comment, Variants
 
 def index(request):
 
-    products_latest = Product.objects.all().order_by(
+    products_latest = Product.objects.filter(status=True).order_by(
         '-id')[:4]  # last 4 products
 
-    products_slider = Product.objects.all().order_by('id')[
+    products_slider = Product.objects.filter(status=True).order_by('id')[
         :4]  # first 4 products
 
-    products_picked = Product.objects.all().order_by(
+    products_picked = Product.objects.filter(status=True).order_by(
         '?')[:4]  # Random selected 4 products
 
     # page = "home"
@@ -68,7 +68,7 @@ def contactus(request):
 def category_products(request, id):
     categories = Category.objects.all()
     catdata = Category.objects.get(pk=id)
-    products = Product.objects.filter(category_id=id)  # default language
+    products = Product.objects.filter(category_id=id, status=True)  # default language
 
     context = {'products': products,
                'categories': categories,
@@ -81,7 +81,7 @@ def search(request):
         form = SearchForm(request.POST)
         if form.is_valid():
             query = form.cleaned_data['query']  # get form input data
-            products = Product.objects.filter(title__icontains=query)
+            products = Product.objects.filter(title__icontains=query, status=True)
 
             category = Category.objects.all()
             context = {'products': products, 'query': query,

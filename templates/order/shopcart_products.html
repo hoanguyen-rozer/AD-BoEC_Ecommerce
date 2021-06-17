@@ -94,9 +94,11 @@
                             </tr>
                         </tfoot>
                     </table>
+                    {% if total > 0 %}
                     <div class="pull-right">
                         <a href="{% url 'orderproduct' %}" class="primary-btn">Place Order</a>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

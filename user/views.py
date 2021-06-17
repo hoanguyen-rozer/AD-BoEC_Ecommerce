@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.contrib.auth.models import Group, User
 
 # Create your views here.
 from django.utils import translation
@@ -31,15 +32,20 @@ def login_form(request):
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
-            current_user = request.user
-            userprofile = UserProfile.objects.get(user_id=current_user.id)
-            request.session['userimage'] = userprofile.image.url
-            if userprofile.role == 'FOREMAN':
-                return HttpResponseRedirect('/foreman/')
-            if userprofile.role == 'PRODUCING_MANAGER':
-                return HttpResponseRedirect('/producing_manager/')
-            return HttpResponseRedirect('/')
+            group = None
+            if request.user.groups.exists():
+                group = request.user.groups.all()[0].name
+            if group == 'customer':
+                login(request, user)
+                current_user = request.user
+                userprofile = UserProfile.objects.get(user_id=current_user.id)
+                request.session['userimage'] = userprofile.image.url
+                return HttpResponseRedirect('/')
+                
+            else:
+                messages.warning(
+                    request, "Login Error !! Username or Password is incorrect")
+                return HttpResponseRedirect('/login')
         else:
             messages.warning(
                 request, "Login Error !! Username or Password is incorrect")
@@ -50,12 +56,6 @@ def login_form(request):
         'categories': categories
     }
     return render(request, 'user/login_form.html', context)
-
-def producing_manager_view(request):
-    return render(request, 'user/producing_manager_page.html')
-
-def foreman_view(request):
-    return render(request, 'user/foreman_page.html')
 
 def logout_func(request):
     logout(request)
@@ -72,9 +72,11 @@ def signup_form(request):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=password)
+            group = Group.objects.get(name='customer')
             login(request, user)
             # Create data in profile table for user
             current_user = request.user
+            current_user.groups.add(group)
             data = UserProfile()
             data.user_id = current_user.id
             data.image = "images/users/user.png"

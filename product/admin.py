@@ -41,6 +41,24 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline, ProductVariantsInline]
     prepopulated_fields = {'slug': ('title',)}
 
+    # def get_readonly_fields(self, request, obj=None):
+    #     if request.user.is_staff and not request.user.is_superuser:
+    #         group = request.user.groups.all()[0].name
+    #         print(group)
+    #         if group:
+    #             if group == 'warehouse_staff':
+    #                 return []
+    #             elif group == 'business_staff':
+    #                 return ['image_tag']
+
+    def get_exclude(self, request, obj=None):
+        if request.user.is_staff and not request.user.is_superuser:
+            group = request.user.groups.all()[0].name
+            if group:
+                if group == 'warehouse_staff':
+                    return ['image_tag', 'price']
+                elif group == 'business_staff':
+                    return ['import_price']
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ['subject', 'comment', 'status', 'create_at']

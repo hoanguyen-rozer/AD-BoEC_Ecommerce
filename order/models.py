@@ -12,7 +12,7 @@ class ShopCart(models.Model):
     quantity = models.IntegerField()
 
     def __str__(self):
-        return self.product.title
+        return f"{self.quantity} of {self.product.title}"
 
     @property
     def price(self):
@@ -33,7 +33,7 @@ class Order(models.Model):
     STATUS = (
         ('New', 'New'),
         ('Accepted', 'Accepted'),
-        ('Preaparing', 'Preaparing'),
+        ('Preparing', 'Preparing'),
         ('OnShipping', 'OnShipping'),
         ('Completed', 'Completed'),
         ('Canceled', 'Canceled'),
@@ -53,7 +53,7 @@ class Order(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user.first_name
+        return f"{self.user.first_name} - {self.code}"
 
 
 class OrderProduct(models.Model):
