@@ -33,8 +33,8 @@ def login_form(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             group = None
-            if request.user.groups.exists():
-                group = request.user.groups.all()[0].name
+            if user.groups.exists():
+                group = user.groups.all()[0].name
             if group == 'customer':
                 login(request, user)
                 current_user = request.user

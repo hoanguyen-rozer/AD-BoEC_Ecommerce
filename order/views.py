@@ -28,14 +28,14 @@ def addtoshopcart(request, id):
     if product.variant != "None":
         variantid = request.POST.get('variantid')  # from variant add to cart
         checkinvariant = ShopCart.objects.filter(
-            variant__id=variantid, user__id=current_user.id)  # Check product in shopcart
+            variant_id=variantid, user_id=current_user.id)  # Check product in shopcart
         if checkinvariant:
             control = 1  # The product is in the cart
         else:
             control = 0  # The product is not in the cart"""
     else:
         checkinproduct = ShopCart.objects.filter(
-            product__id=id, user__id=current_user.id)  # Check product in shopcart
+            product_id=id, user_id=current_user.id)  # Check product in shopcart
         if checkinproduct:
             control = 1  # The product is in the cart
         else:
@@ -47,16 +47,16 @@ def addtoshopcart(request, id):
             if control == 1:  # Update  shopcart
                 if product.variant == 'None':
                     data = ShopCart.objects.get(
-                        product__id=id, user__id=current_user.id)
+                        product_id=id, user_id=current_user.id)
                 else:
                     data = ShopCart.objects.get(
-                        product__id=id, variant__id=variantid, user__id=current_user.id)
+                        product_id=id, variant_id=variantid, user_id=current_user.id)
                 data.quantity += form.cleaned_data['quantity']
                 data.save()  # save data
             else:  # Inser to Shopcart
                 data = ShopCart()
-                data.user.id = current_user.id
-                data.product.id = id
+                data.user_id = current_user.id
+                data.product_id = id
                 if variantid is not None:
                     data.variant.id = variantid
                 data.quantity = form.cleaned_data['quantity']
@@ -67,7 +67,7 @@ def addtoshopcart(request, id):
     else:  # if there is no post>
         if control == 1:  # Update  shopcart
             data = ShopCart.objects.get(
-                product__id=id, user__id=current_user.id)
+                product_id=id, user_id=current_user.id)
             data.quantity += 1
             data.save()
         else:  # Inser to Shopcart
